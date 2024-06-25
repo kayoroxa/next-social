@@ -1,25 +1,28 @@
-"use client";
+'use client'
 
-import { updateProfile } from "@/lib/actions";
-import { User } from "@prisma/client";
-import Image from "next/image";
-import { useActionState, useState } from "react";
-import { CldUploadWidget } from "next-cloudinary";
-import { useRouter } from "next/navigation";
-import UpdateButton from "./UpdateButton";
+import { _updateProfile } from '@/lib/actions'
+import { User } from '@prisma/client'
+import { CldUploadWidget } from 'next-cloudinary'
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import { useActionState, useState } from 'react'
+import UpdateButton from './UpdateButton'
 
 const UpdateUser = ({ user }: { user: User }) => {
-  const [open, setOpen] = useState(false);
-  const [cover, setCover] = useState<any>(false);
+  const [open, setOpen] = useState(false)
+  const [cover, setCover] = useState<any>(false)
 
-  const [state, formAction] = useActionState(updateProfile,{success:false,error:false});
+  const [state, formAction] = useActionState(_updateProfile, {
+    success: false,
+    error: false,
+  })
 
-  const router = useRouter();
+  const router = useRouter()
 
   const handleClose = () => {
-    setOpen(false);
-    state.success && router.refresh();
-  };
+    setOpen(false)
+    state.success && router.refresh()
+  }
 
   return (
     <div className="">
@@ -32,8 +35,8 @@ const UpdateUser = ({ user }: { user: User }) => {
       {open && (
         <div className="absolute w-screen h-screen top-0 left-0 bg-black bg-opacity-65 flex items-center justify-center z-50 ">
           <form
-            action={(formData) =>
-              formAction({ formData, cover: cover?.secure_url || "" })
+            action={formData =>
+              formAction({ formData, cover: cover?.secure_url || '' })
             }
             className="p-12 bg-white rounded-lg shadow-md flex flex-col gap-2 w-full md:w-1/2 xl:w-1/3 relative"
           >
@@ -45,7 +48,7 @@ const UpdateUser = ({ user }: { user: User }) => {
             {/* COVER PIC UPLOAD */}
             <CldUploadWidget
               uploadPreset="social"
-              onSuccess={(result) => setCover(result.info)}
+              onSuccess={result => setCover(result.info)}
             >
               {({ open }) => {
                 return (
@@ -56,7 +59,7 @@ const UpdateUser = ({ user }: { user: User }) => {
                     <label htmlFor="">Cover Picture</label>
                     <div className="flex items-center gap-2 cursor-pointer">
                       <Image
-                        src={user.cover || "/noCover.png"}
+                        src={user.cover || '/noCover.png'}
                         alt=""
                         width={48}
                         height={32}
@@ -67,7 +70,7 @@ const UpdateUser = ({ user }: { user: User }) => {
                       </span>
                     </div>
                   </div>
-                );
+                )
               }}
             </CldUploadWidget>
 
@@ -80,7 +83,7 @@ const UpdateUser = ({ user }: { user: User }) => {
                 </label>
                 <input
                   type="text"
-                  placeholder={user.name || "John"}
+                  placeholder={user.name || 'John'}
                   className="ring-1 ring-gray-300 p-[13px] rounded-md text-sm"
                   name="name"
                 />
@@ -91,7 +94,7 @@ const UpdateUser = ({ user }: { user: User }) => {
                 </label>
                 <input
                   type="text"
-                  placeholder={user.surname || "Doe"}
+                  placeholder={user.surname || 'Doe'}
                   className="ring-1 ring-gray-300 p-[13px] rounded-md text-sm"
                   name="surname"
                 />
@@ -103,7 +106,7 @@ const UpdateUser = ({ user }: { user: User }) => {
                 </label>
                 <input
                   type="text"
-                  placeholder={user.description || "Life is beautiful..."}
+                  placeholder={user.description || 'Life is beautiful...'}
                   className="ring-1 ring-gray-300 p-[13px] rounded-md text-sm"
                   name="description"
                 />
@@ -115,7 +118,7 @@ const UpdateUser = ({ user }: { user: User }) => {
                 </label>
                 <input
                   type="text"
-                  placeholder={user.city || "New York"}
+                  placeholder={user.city || 'New York'}
                   className="ring-1 ring-gray-300 p-[13px] rounded-md text-sm"
                   name="city"
                 />
@@ -128,7 +131,7 @@ const UpdateUser = ({ user }: { user: User }) => {
                 </label>
                 <input
                   type="text"
-                  placeholder={user.school || "MIT"}
+                  placeholder={user.school || 'MIT'}
                   className="ring-1 ring-gray-300 p-[13px] rounded-md text-sm"
                   name="school"
                 />
@@ -141,7 +144,7 @@ const UpdateUser = ({ user }: { user: User }) => {
                 </label>
                 <input
                   type="text"
-                  placeholder={user.work || "Apple Inc."}
+                  placeholder={user.work || 'Apple Inc.'}
                   className="ring-1 ring-gray-300 p-[13px] rounded-md text-sm"
                   name="work"
                 />
@@ -154,13 +157,13 @@ const UpdateUser = ({ user }: { user: User }) => {
                 </label>
                 <input
                   type="text"
-                  placeholder={user.website || "lama.dev"}
+                  placeholder={user.website || 'lama.dev'}
                   className="ring-1 ring-gray-300 p-[13px] rounded-md text-sm"
                   name="website"
                 />
               </div>
             </div>
-            <UpdateButton/>
+            <UpdateButton />
             {state.success && (
               <span className="text-green-500">Profile has been updated!</span>
             )}
@@ -177,7 +180,7 @@ const UpdateUser = ({ user }: { user: User }) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default UpdateUser;
+export default UpdateUser

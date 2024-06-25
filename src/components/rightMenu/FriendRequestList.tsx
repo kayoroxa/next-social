@@ -1,43 +1,43 @@
-"use client";
+'use client'
 
-import { acceptFollowRequest, declineFollowRequest } from "@/lib/actions";
-import { FollowRequest, User } from "@prisma/client";
-import Image from "next/image";
-import { useOptimistic, useState } from "react";
+import { _acceptFollowRequest, _declineFollowRequest } from '@/lib/actions'
+import { FollowRequest, User } from '@prisma/client'
+import Image from 'next/image'
+import { useOptimistic, useState } from 'react'
 
 type RequestWithUser = FollowRequest & {
-  sender: User;
-};
+  sender: User
+}
 
 const FriendRequestList = ({ requests }: { requests: RequestWithUser[] }) => {
-  const [requestState, setRequestState] = useState(requests);
+  const [requestState, setRequestState] = useState(requests)
 
   const accept = async (requestId: number, userId: string) => {
-    removeOptimisticRequest(requestId);
+    removeOptimisticRequest(requestId)
     try {
-      await acceptFollowRequest(userId);
-      setRequestState((prev) => prev.filter((req) => req.id !== requestId));
+      await _acceptFollowRequest(userId)
+      setRequestState(prev => prev.filter(req => req.id !== requestId))
     } catch (err) {}
-  };
+  }
   const decline = async (requestId: number, userId: string) => {
-    removeOptimisticRequest(requestId);
+    removeOptimisticRequest(requestId)
     try {
-      await declineFollowRequest(userId);
-      setRequestState((prev) => prev.filter((req) => req.id !== requestId));
+      await _declineFollowRequest(userId)
+      setRequestState(prev => prev.filter(req => req.id !== requestId))
     } catch (err) {}
-  };
+  }
 
   const [optimisticRequests, removeOptimisticRequest] = useOptimistic(
     requestState,
-    (state, value: number) => state.filter((req) => req.id !== value)
-  );
+    (state, value: number) => state.filter(req => req.id !== value)
+  )
   return (
     <div className="">
-      {optimisticRequests.map((request) => (
+      {optimisticRequests.map(request => (
         <div className="flex items-center justify-between" key={request.id}>
           <div className="flex items-center gap-4">
             <Image
-              src={request.sender.avatar || "/noAvatar.png"}
+              src={request.sender.avatar || '/noAvatar.png'}
               alt=""
               width={40}
               height={40}
@@ -45,7 +45,7 @@ const FriendRequestList = ({ requests }: { requests: RequestWithUser[] }) => {
             />
             <span className="font-semibold">
               {request.sender.name && request.sender.surname
-                ? request.sender.name + " " + request.sender.surname
+                ? request.sender.name + ' ' + request.sender.surname
                 : request.sender.username}
             </span>
           </div>
@@ -76,7 +76,7 @@ const FriendRequestList = ({ requests }: { requests: RequestWithUser[] }) => {
         </div>
       ))}
     </div>
-  );
-};
+  )
+}
 
-export default FriendRequestList;
+export default FriendRequestList

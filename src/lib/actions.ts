@@ -1,15 +1,15 @@
-"use server";
+'use server'
 
-import { auth } from "@clerk/nextjs/server";
-import prisma from "./client";
-import { z } from "zod";
-import { revalidatePath } from "next/cache";
+import { auth } from '@clerk/nextjs/server'
+import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
+import prisma from './client'
 
-export const switchFollow = async (userId: string) => {
-  const { userId: currentUserId } = auth();
+export const _switchFollow = async (userId: string) => {
+  const { userId: currentUserId } = auth()
 
   if (!currentUserId) {
-    throw new Error("User is not authenticated!");
+    throw new Error('User is not authenticated!')
   }
 
   try {
@@ -18,48 +18,48 @@ export const switchFollow = async (userId: string) => {
         followerId: currentUserId,
         followingId: userId,
       },
-    });
+    })
 
     if (existingFollow) {
       await prisma.follower.delete({
         where: {
           id: existingFollow.id,
         },
-      });
+      })
     } else {
       const existingFollowRequest = await prisma.followRequest.findFirst({
         where: {
           senderId: currentUserId,
           receiverId: userId,
         },
-      });
+      })
 
       if (existingFollowRequest) {
         await prisma.followRequest.delete({
           where: {
             id: existingFollowRequest.id,
           },
-        });
+        })
       } else {
         await prisma.followRequest.create({
           data: {
             senderId: currentUserId,
             receiverId: userId,
           },
-        });
+        })
       }
     }
   } catch (err) {
-    console.log(err);
-    throw new Error("Something went wrong!");
+    console.log(err)
+    throw new Error('Something went wrong!')
   }
-};
+}
 
-export const switchBlock = async (userId: string) => {
-  const { userId: currentUserId } = auth();
+export const _switchBlock = async (userId: string) => {
+  const { userId: currentUserId } = auth()
 
   if (!currentUserId) {
-    throw new Error("User is not Authenticated!!");
+    throw new Error('User is not Authenticated!!')
   }
 
   try {
@@ -68,33 +68,33 @@ export const switchBlock = async (userId: string) => {
         blockerId: currentUserId,
         blockedId: userId,
       },
-    });
+    })
 
     if (existingBlock) {
       await prisma.block.delete({
         where: {
           id: existingBlock.id,
         },
-      });
+      })
     } else {
       await prisma.block.create({
         data: {
           blockerId: currentUserId,
           blockedId: userId,
         },
-      });
+      })
     }
   } catch (err) {
-    console.log(err);
-    throw new Error("Something went wrong!");
+    console.log(err)
+    throw new Error('Something went wrong!')
   }
-};
+}
 
-export const acceptFollowRequest = async (userId: string) => {
-  const { userId: currentUserId } = auth();
+export const _acceptFollowRequest = async (userId: string) => {
+  const { userId: currentUserId } = auth()
 
   if (!currentUserId) {
-    throw new Error("User is not Authenticated!!");
+    throw new Error('User is not Authenticated!!')
   }
 
   try {
@@ -103,33 +103,33 @@ export const acceptFollowRequest = async (userId: string) => {
         senderId: userId,
         receiverId: currentUserId,
       },
-    });
+    })
 
     if (existingFollowRequest) {
       await prisma.followRequest.delete({
         where: {
           id: existingFollowRequest.id,
         },
-      });
+      })
 
       await prisma.follower.create({
         data: {
           followerId: userId,
           followingId: currentUserId,
         },
-      });
+      })
     }
   } catch (err) {
-    console.log(err);
-    throw new Error("Something went wrong!");
+    console.log(err)
+    throw new Error('Something went wrong!')
   }
-};
+}
 
-export const declineFollowRequest = async (userId: string) => {
-  const { userId: currentUserId } = auth();
+export const _declineFollowRequest = async (userId: string) => {
+  const { userId: currentUserId } = auth()
 
   if (!currentUserId) {
-    throw new Error("User is not Authenticated!!");
+    throw new Error('User is not Authenticated!!')
   }
 
   try {
@@ -138,31 +138,31 @@ export const declineFollowRequest = async (userId: string) => {
         senderId: userId,
         receiverId: currentUserId,
       },
-    });
+    })
 
     if (existingFollowRequest) {
       await prisma.followRequest.delete({
         where: {
           id: existingFollowRequest.id,
         },
-      });
+      })
     }
   } catch (err) {
-    console.log(err);
-    throw new Error("Something went wrong!");
+    console.log(err)
+    throw new Error('Something went wrong!')
   }
-};
+}
 
-export const updateProfile = async (
+export const _updateProfile = async (
   prevState: { success: boolean; error: boolean },
   payload: { formData: FormData; cover: string }
 ) => {
-  const { formData, cover } = payload;
-  const fields = Object.fromEntries(formData);
+  const { formData, cover } = payload
+  const fields = Object.fromEntries(formData)
 
   const filteredFields = Object.fromEntries(
-    Object.entries(fields).filter(([_, value]) => value !== "")
-  );
+    Object.entries(fields).filter(([_, value]) => value !== '')
+  )
 
   const Profile = z.object({
     cover: z.string().optional(),
@@ -173,19 +173,19 @@ export const updateProfile = async (
     school: z.string().max(60).optional(),
     work: z.string().max(60).optional(),
     website: z.string().max(60).optional(),
-  });
+  })
 
-  const validatedFields = Profile.safeParse({ cover, ...filteredFields });
+  const validatedFields = Profile.safeParse({ cover, ...filteredFields })
 
   if (!validatedFields.success) {
-    console.log(validatedFields.error.flatten().fieldErrors);
-    return { success: false, error: true };
+    console.log(validatedFields.error.flatten().fieldErrors)
+    return { success: false, error: true }
   }
 
-  const { userId } = auth();
+  const { userId } = auth()
 
   if (!userId) {
-    return { success: false, error: true };
+    return { success: false, error: true }
   }
 
   try {
@@ -194,18 +194,18 @@ export const updateProfile = async (
         id: userId,
       },
       data: validatedFields.data,
-    });
-    return { success: true, error: false };
+    })
+    return { success: true, error: false }
   } catch (err) {
-    console.log(err);
-    return { success: false, error: true };
+    console.log(err)
+    return { success: false, error: true }
   }
-};
+}
 
-export const switchLike = async (postId: number) => {
-  const { userId } = auth();
+export const _switchLike = async (postId: number) => {
+  const { userId } = auth()
 
-  if (!userId) throw new Error("User is not authenticated!");
+  if (!userId) throw new Error('User is not authenticated!')
 
   try {
     const existingLike = await prisma.like.findFirst({
@@ -213,32 +213,32 @@ export const switchLike = async (postId: number) => {
         postId,
         userId,
       },
-    });
+    })
 
     if (existingLike) {
       await prisma.like.delete({
         where: {
           id: existingLike.id,
         },
-      });
+      })
     } else {
       await prisma.like.create({
         data: {
           postId,
           userId,
         },
-      });
+      })
     }
   } catch (err) {
-    console.log(err);
-    throw new Error("Something went wrong");
+    console.log(err)
+    throw new Error('Something went wrong')
   }
-};
+}
 
-export const addComment = async (postId: number, desc: string) => {
-  const { userId } = auth();
+export const _addComment = async (postId: number, desc: string) => {
+  const { userId } = auth()
 
-  if (!userId) throw new Error("User is not authenticated!");
+  if (!userId) throw new Error('User is not authenticated!')
 
   try {
     const createdComment = await prisma.comment.create({
@@ -250,30 +250,30 @@ export const addComment = async (postId: number, desc: string) => {
       include: {
         user: true,
       },
-    });
+    })
 
-    return createdComment;
+    return createdComment
   } catch (err) {
-    console.log(err);
-    throw new Error("Something went wrong!");
+    console.log(err)
+    throw new Error('Something went wrong!')
   }
-};
+}
 
-export const addPost = async (formData: FormData, img: string) => {
-  const desc = formData.get("desc") as string;
+export const _addPost = async (formData: FormData, img: string) => {
+  const desc = formData.get('desc') as string
 
-  const Desc = z.string().min(1).max(255);
+  const Desc = z.string().min(1).max(255)
 
-  const validatedDesc = Desc.safeParse(desc);
+  const validatedDesc = Desc.safeParse(desc)
 
   if (!validatedDesc.success) {
     //TODO
-    console.log("description is not valid");
-    return;
+    console.log('description is not valid')
+    return
   }
-  const { userId } = auth();
+  const { userId } = auth()
 
-  if (!userId) throw new Error("User is not authenticated!");
+  if (!userId) throw new Error('User is not authenticated!')
 
   try {
     await prisma.post.create({
@@ -282,32 +282,32 @@ export const addPost = async (formData: FormData, img: string) => {
         userId,
         img,
       },
-    });
+    })
 
-    revalidatePath("/");
+    revalidatePath('/')
   } catch (err) {
-    console.log(err);
+    console.log(err)
   }
-};
+}
 
-export const addStory = async (img: string) => {
-  const { userId } = auth();
+export const _addStory = async (img: string) => {
+  const { userId } = auth()
 
-  if (!userId) throw new Error("User is not authenticated!");
+  if (!userId) throw new Error('User is not authenticated!')
 
   try {
     const existingStory = await prisma.story.findFirst({
       where: {
         userId,
       },
-    });
+    })
 
     if (existingStory) {
       await prisma.story.delete({
         where: {
           id: existingStory.id,
         },
-      });
+      })
     }
     const createdStory = await prisma.story.create({
       data: {
@@ -318,18 +318,18 @@ export const addStory = async (img: string) => {
       include: {
         user: true,
       },
-    });
+    })
 
-    return createdStory;
+    return createdStory
   } catch (err) {
-    console.log(err);
+    console.log(err)
   }
-};
+}
 
-export const deletePost = async (postId: number) => {
-  const { userId } = auth();
+export const _deletePost = async (postId: number) => {
+  const { userId } = auth()
 
-  if (!userId) throw new Error("User is not authenticated!");
+  if (!userId) throw new Error('User is not authenticated!')
 
   try {
     await prisma.post.delete({
@@ -337,9 +337,9 @@ export const deletePost = async (postId: number) => {
         id: postId,
         userId,
       },
-    });
-    revalidatePath("/")
+    })
+    revalidatePath('/')
   } catch (err) {
-    console.log(err);
+    console.log(err)
   }
-};
+}

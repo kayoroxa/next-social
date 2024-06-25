@@ -1,27 +1,26 @@
-"use client";
+'use client'
 
-import { useUser } from "@clerk/nextjs";
-import { auth } from "@clerk/nextjs/server";
-import { CldUploadWidget } from "next-cloudinary";
-import Image from "next/image";
-import { useState } from "react";
-import AddPostButton from "./AddPostButton";
-import { addPost } from "@/lib/actions";
+import { _addPost } from '@/lib/actions'
+import { useUser } from '@clerk/nextjs'
+import { CldUploadWidget } from 'next-cloudinary'
+import Image from 'next/image'
+import { useState } from 'react'
+import AddPostButton from './AddPostButton'
 
 const AddPost = () => {
-  const { user, isLoaded } = useUser();
-  const [desc, setDesc] = useState("");
-  const [img, setImg] = useState<any>();
+  const { user, isLoaded } = useUser()
+  const [desc, setDesc] = useState('')
+  const [img, setImg] = useState<any>()
 
   if (!isLoaded) {
-    return "Loading...";
+    return 'Loading...'
   }
 
   return (
     <div className="p-4 bg-white shadow-md rounded-lg flex gap-4 justify-between text-sm">
       {/* AVATAR */}
       <Image
-        src={user?.imageUrl || "/noAvatar.png"}
+        src={user?.imageUrl || '/noAvatar.png'}
         alt=""
         width={48}
         height={48}
@@ -30,12 +29,15 @@ const AddPost = () => {
       {/* POST */}
       <div className="flex-1">
         {/* TEXT INPUT */}
-        <form action={(formData)=>addPost(formData,img?.secure_url || "")} className="flex gap-4">
+        <form
+          action={formData => _addPost(formData, img?.secure_url || '')}
+          className="flex gap-4"
+        >
           <textarea
             placeholder="What's on your mind?"
             className="flex-1 bg-slate-100 rounded-lg p-2"
             name="desc"
-            onChange={(e) => setDesc(e.target.value)}
+            onChange={e => setDesc(e.target.value)}
           ></textarea>
           <div className="">
             <Image
@@ -53,8 +55,8 @@ const AddPost = () => {
           <CldUploadWidget
             uploadPreset="social"
             onSuccess={(result, { widget }) => {
-              setImg(result.info);
-              widget.close();
+              setImg(result.info)
+              widget.close()
             }}
           >
             {({ open }) => {
@@ -66,7 +68,7 @@ const AddPost = () => {
                   <Image src="/addimage.png" alt="" width={20} height={20} />
                   Photo
                 </div>
-              );
+              )
             }}
           </CldUploadWidget>
           <div className="flex items-center gap-2 cursor-pointer">
@@ -84,7 +86,7 @@ const AddPost = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AddPost;
+export default AddPost

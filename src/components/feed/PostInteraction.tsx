@@ -1,24 +1,24 @@
-"use client";
+'use client'
 
-import { switchLike } from "@/lib/actions";
-import { useAuth } from "@clerk/nextjs";
-import Image from "next/image";
-import { useOptimistic, useState } from "react";
+import { _switchLike } from '@/lib/actions'
+import { useAuth } from '@clerk/nextjs'
+import Image from 'next/image'
+import { useOptimistic, useState } from 'react'
 
 const PostInteraction = ({
   postId,
   likes,
   commentNumber,
 }: {
-  postId: number;
-  likes: string[];
-  commentNumber: number;
+  postId: number
+  likes: string[]
+  commentNumber: number
 }) => {
-  const { isLoaded, userId } = useAuth();
+  const { isLoaded, userId } = useAuth()
   const [likeState, setLikeState] = useState({
     likeCount: likes.length,
     isLiked: userId ? likes.includes(userId) : false,
-  });
+  })
 
   const [optimisticLike, switchOptimisticLike] = useOptimistic(
     likeState,
@@ -26,20 +26,20 @@ const PostInteraction = ({
       return {
         likeCount: state.isLiked ? state.likeCount - 1 : state.likeCount + 1,
         isLiked: !state.isLiked,
-      };
+      }
     }
-  );
+  )
 
   const likeAction = async () => {
-    switchOptimisticLike("");
+    switchOptimisticLike('')
     try {
-      switchLike(postId);
-      setLikeState((state) => ({
+      _switchLike(postId)
+      setLikeState(state => ({
         likeCount: state.isLiked ? state.likeCount - 1 : state.likeCount + 1,
         isLiked: !state.isLiked,
-      }));
+      }))
     } catch (err) {}
-  };
+  }
   return (
     <div className="flex items-center justify-between text-sm my-4">
       <div className="flex gap-8">
@@ -47,7 +47,7 @@ const PostInteraction = ({
           <form action={likeAction}>
             <button>
               <Image
-                src={optimisticLike.isLiked ? "/liked.png" : "/like.png"}
+                src={optimisticLike.isLiked ? '/liked.png' : '/like.png'}
                 width={16}
                 height={16}
                 alt=""
@@ -71,7 +71,8 @@ const PostInteraction = ({
           />
           <span className="text-gray-300">|</span>
           <span className="text-gray-500">
-            {commentNumber}<span className="hidden md:inline"> Comments</span>
+            {commentNumber}
+            <span className="hidden md:inline"> Comments</span>
           </span>
         </div>
       </div>
@@ -91,7 +92,7 @@ const PostInteraction = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PostInteraction;
+export default PostInteraction

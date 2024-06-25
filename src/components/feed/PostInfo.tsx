@@ -1,13 +1,13 @@
-"use client";
+'use client'
 
-import { deletePost } from "@/lib/actions";
-import Image from "next/image";
-import { useState } from "react";
+import { _deletePost } from '@/lib/actions'
+import Image from 'next/image'
+import { useState } from 'react'
 
 const PostInfo = ({ postId }: { postId: number }) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
-  const deletePostWithId = deletePost.bind(null, postId);
+  const deletePostWithId = _deletePost.bind(null, postId)
   return (
     <div className="relative">
       <Image
@@ -15,7 +15,7 @@ const PostInfo = ({ postId }: { postId: number }) => {
         width={16}
         height={16}
         alt=""
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={() => setOpen(prev => !prev)}
         className="cursor-pointer"
       />
       {open && (
@@ -28,7 +28,7 @@ const PostInfo = ({ postId }: { postId: number }) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default PostInfo;
+export default PostInfo
